@@ -31,7 +31,38 @@ Organize a saída e visualização das informações extraídas.
 
 # Documentação do Teste 1
 
-Escreva aqui a documentação do desenvolvimento do teste 1.
+Como Executar o Projeto
+
+Criar ambiente virtual
+```
+python3 -m venv venv
+source venv/bin/activate
+```
+Instalar dependências
+```
+pip install pdfplumber
+```
+Executar o script
+```
+python read.py
+```
+
+A solução para a extração de dados foi desenvolvida utilizando a biblioteca pdfplumber para a conversão precisa do documento PDF em texto estruturado. Em seguida, foi implementado um parser baseado em Expressões Regulares (Regex) nativas da biblioteca re do Python.
+
+Arquitetura e Decisões Técnicas:
+
+Identificação Dinâmica: Foi criada a função central process_invoice que varre o texto extraído, identifica automaticamente se a fatura pertence à CPFL ou CEMIG, e direciona o texto para a função de parsing específica, tornando o código modular e escalável.
+
+Sanitização de Dados: Funções auxiliares (clean_currency e clean_number) foram construídas para higienizar strings de moedas e grandezas físicas no padrão brasileiro (ex: "1.234,56"), convertendo-as para o tipo float para permitir cálculos e formatações consistentes.
+
+Tratamento de Exceções Layout: Diferenças textuais, como textos encavalados na mesma linha ("10.10.2023 às 06:30:49" na 2ª via da Cemig) foram previstos e contornados pelas expressões regulares, garantindo a robustez na captura do "Número de Instalação".
+
+Apresentação: Foi criada uma função dedicada (print_formated_data) que atende estritamente ao requisito de "organizar a saída e visualização", imprimindo os 16 campos solicitados de maneira amigável no terminal.
+
+Visão de Produção:
+Para cenários de grande escala, soluções baseadas em Regex podem requerer manutenção frequente devido a mudanças nos layouts das concessionárias. A evolução recomendada seria a adoção de APIs de Document AI ou OCR Cognitivo, utilizando o script atual como validador (fallback)
+
+
 
 # Teste 2
 
@@ -45,7 +76,20 @@ Atividade: Analise a fatura e redija um documento respondendo os pontos abaixo. 
  - Identifique o consumo da instalação referente ao mês de julho de 2023.
 
 # Resposta para o Teste 2
-Escreva aqui suas respostas para o teste 2.
+1. Diferenças entre a fatura GD ("fatura_cemig.pdf") e a convencional ("fatura_cemig_convencional.pdf"):
+A diferença primordial é a participação no Sistema de Compensação de Energia Elétrica (SCEE). Na fatura convencional, o fluxo é unidirecional (o cliente consome da rede e paga o total). Na fatura GD, o cliente injeta energia na rede. Assim, a fatura evidencia os créditos gerados pela usina ("Energia compensada") utilizados para abater o consumo da unidade no mês, restando o custo de disponibilidade e tributos não compensáveis (como iluminação pública).
+
+2. Termos e valores na seção "Valores Faturados":
+- Energia Elétrica: Tarifa de Energia (TE) + Tarifa de Uso do Sistema de Distribuição (TUSD) aplicadas sobre o consumo bruto medido pela concessionária.
+- Energia SCEE s/ ICMS: Montante de energia consumida da rede equivalente ao que foi injetado (compensado). Ocorre a isenção de ICMS sobre essa parcela, justificando a sua separação no demonstrativo.
+- Energia compensada GD II / Energia comp. adicional: Créditos de energia (em kWh) da geração própria usados para abater o valor da conta. Eles entram como um valor dedutível (negativo).
+- Contrib. Ilum. Publica Municipal: Taxa obrigatória das prefeituras. Não pode ser abatida com créditos de energia GD.
+
+3. Informação mais importante na seção "Informações Gerais":
+Considerando o Sistema de Compensação, a informação mais crítica é o SALDO ATUAL DE GERAÇÃO (que consta como 234,63 kWh). Essa métrica indica o "banco de créditos" ativo da instalação, vital para o monitoramento da saúde financeira e da eficiência da usina (se ela está gerando superávit ou déficit de energia ao longo dos meses).
+
+4. Consumo da instalação referente ao mês de julho de 2023:
+Consultando o quadro de "Histórico de Consumo" na fatura_cemig.pdf, o consumo medido referente ao mês JUL/23 foi de 199 kWh.
 
 # Requisitos dos Desafios:
 
